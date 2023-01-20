@@ -22,14 +22,14 @@ namespace IngameScript
 {
     partial class Program : MyGridProgram
     {
-        float cargoVolumeLimitPercent = 50f;
-        float downSpeed = .04f;
-        string groupName = "Drilling Rig";
-        string cargoName = "Cargo_DR";
-        string drillName = "DR_Drill";
-        string pistonUpName = "PistonMast";
-        string pistonAcrossName = "PistonJib";
-        string pistonOnDrillName = "PistonDriver";
+        readonly float cargoVolumeLimitPercent = 50f;
+        readonly float downSpeed = .04f;
+        readonly string groupName = "Drilling Rig";
+        readonly string cargoName = "Cargo_DR";
+        readonly string drillName = "DR_Drill";
+        readonly string pistonUpName = "PistonMast";
+        readonly string pistonAcrossName = "PistonJib";
+        readonly string pistonOnDrillName = "PistonDriver";
         List<IMyTerminalBlock> drillingRig = new List<IMyTerminalBlock>();
         List<IMyShipDrill> drills = new List<IMyShipDrill>();
         List<IMyPistonBase> mast = new List<IMyPistonBase>();
@@ -43,11 +43,11 @@ namespace IngameScript
 
             //assign Cargo container
             cargo = (IMyCargoContainer)GridTerminalSystem.GetBlockWithName(cargoName);
-            if (cargo == null) printNotFound(cargoName);
+            if (cargo == null) PrintNotFound(cargoName);
 
             //setup
             IMyBlockGroup rigGroup = GridTerminalSystem.GetBlockGroupWithName(groupName);
-            if (rigGroup == null) printNotFound(groupName);
+            if (rigGroup == null) PrintNotFound(groupName);
             drillingRig.Clear();
             rigGroup.GetBlocks(drillingRig);
             drills.Clear();
@@ -62,44 +62,46 @@ namespace IngameScript
                 if (block.CustomName.Contains(pistonAcrossName)) jib.Add(block as IMyPistonBase);
                 if (block.CustomName.Contains(pistonOnDrillName)) kelly.Add(block as IMyPistonBase);
             }
-            downSpeed = downSpeed / (mast.Count() + kelly.Count());
-            preDrillChecks();
+            downSpeed /= (mast.Count() + kelly.Count());
+            PreDrillChecks();
             Runtime.UpdateFrequency = UpdateFrequency.Update100;
             Echo("Drilling rig ready");
         }
 
         public void Main(string argument, UpdateType updateSource)
         {
-            preDrillChecks();
-            Echo($"Cargo capacity at '{cargoVolume()}'%.  \nDrilling will Stop at  '{cargoVolumeLimitPercent}'%. or more");
+            PreDrillChecks();
+            Echo($"Cargo capacity at '{CargoVolume()}'%. \nDrilling will Stop at '{cargoVolumeLimitPercent}'% or more.");
 
-            if (cargoVolume() >= cargoVolumeLimitPercent) stopDrilling();
-            else startDrilling();
+            if (CargoVolume() >= cargoVolumeLimitPercent) StopDrilling();
+            else StartDrilling();
             //TODO: if the drills reach the bottom, then bring them back up
         } //END Main()
 
-        void startDrilling()
+        void StartDrilling()
         {
             Echo("Drilling...");
-            turnDrillsOn();
-            setAllPistonsVelocity("down");
+            TurnDrillsOn();
+            SetAllPistonsVelocity("down");
         }
 
-        void stopDrilling()
+        void StopDrilling()
         {
-            setAllPistonsVelocity("up");
+            //TODO: bring pistons up some before stopping to avoid breaking
+            //drill due to time delay on drill firing up
+            SetAllPistonsVelocity("up");
             Echo("Drilling Stoped");
-            setAllPistonsVelocity("stop");
-            turnDrillsOff();
+            SetAllPistonsVelocity("stop");
+            TurnDrillsOff();
         }
 
-        float cargoVolume()
+        float CargoVolume()
         {
             float howFull = 100.0f * (float)cargo.GetInventory(0).CurrentVolume / (float)cargo.GetInventory(0).MaxVolume;
             return howFull;
         }
 
-        void setAllPistonsVelocity(string direction)
+        void SetAllPistonsVelocity(string direction)
         {
             float velocity = 0.0f;
             if (direction == "down") velocity = downSpeed;
@@ -110,26 +112,27 @@ namespace IngameScript
             foreach (IMyPistonBase p in kelly) p.Velocity = velocity;
         }
 
-        void turnDrillsOn()
+        void TurnDrillsOn()
         {
             foreach (IMyShipDrill drill in drills) drill.ApplyAction("OnOff_On");
         }
 
-        void turnDrillsOff()
+        void TurnDrillsOff()
         {
             foreach (IMyShipDrill drill in drills) drill.ApplyAction("OnOff_Off");
         }
 
-        void preDrillChecks()
+        void PreDrillChecks()
         {
             //TODO: add Checks
-            if (mast.Count() == 0) printNotFound(pistonUpName);
-            if (drills.Count() == 0) printNotFound(drillName);
-            if (kelly.Count() == 0) printNotFound(pistonOnDrillName);
+            if (mast.Count() == 0) PrintNotFound(pistonUpName);
+            if (drills.Count() == 0) PrintNotFound(drillName);
+            if (kelly.Count() == 0) PrintNotFound(pistonOnDrillName);
         }
 
-        void printNotFound(string name)
+        void PrintNotFound(string name)
         {
+            //TODO: add type: info, warn, err
             Echo($"ERROR: Missing '{name}` or is empty");
             return;
         }
