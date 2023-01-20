@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33214.272
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrillingRigController", "DrillingRigController\DrillingRigController.csproj", "{C96B1AD4-D3FB-4D5E-9421-EA09BEEFAF84}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C96B1AD4-D3FB-4D5E-9421-EA09BEEFAF84}.Debug|x64.ActiveCfg = Debug|x64
+		{C96B1AD4-D3FB-4D5E-9421-EA09BEEFAF84}.Debug|x64.Build.0 = Debug|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D294F073-7533-4497-8437-578FAD723A23}
+	EndGlobalSection
+EndGlobal
